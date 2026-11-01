@@ -62,11 +62,19 @@ int main(void) {
     SetTargetFPS(60);
 
     Vector2 previus;
+    Vector2 mousePoint;
+
+    Button playButton = { { (screenWidth - 200.0)/2, 400.0, 200.0, 60.0 }, "PLAY", BLUE };
 
     while (!WindowShouldClose()) {
         switch (currentScreen) {
             case TITLE: {
                 if (IsKeyPressed(KEY_ENTER)) currentScreen = GAME;
+                mousePoint = GetMousePosition();
+
+                if (CheckCollisionPointRec(mousePoint, playButton.rec)) {
+                    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) currentScreen = GAME;
+                }
             } break;
             case GAME: {
                 float deltaTime = GetFrameTime();
@@ -134,7 +142,9 @@ int main(void) {
         BeginDrawing();
         switch (currentScreen) {
             case TITLE: {
-                DrawText("BREAKOUT", (screenWidth - MeasureText("BREAKOUT", 80))/2, (screenHeight - 80)/2, 80, RED);
+                DrawText("BREAKOUT", (screenWidth - MeasureText("BREAKOUT", 80))/2, 200, 80, RED);
+                DrawRectangle(playButton.rec.x, playButton.rec.y, playButton.rec.width, playButton.rec.height, playButton.col);
+                DrawText(playButton.text, (screenWidth - MeasureText(playButton.text, 40))/2, playButton.rec.y + 10, 40, BLACK);
             } break;
             case GAME: {
                 ClearBackground(BLACK);

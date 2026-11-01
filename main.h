@@ -28,6 +28,12 @@ typedef struct Brick {
     Color color;
 } Brick ;
 
+typedef struct Button {
+    Rectangle rec;
+    char text[32];
+    Color col;
+} Button ;
+
 typedef enum GameScreen {
     TITLE = 0,
     GAME,
