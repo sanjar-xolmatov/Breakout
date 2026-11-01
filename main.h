@@ -28,4 +28,9 @@ typedef struct Brick {
     Color color;
 } Brick ;
 
+typedef enum GameScreen {
+    TITLE = 0,
+    GAME,
+} GameScreen;
+
 #endif
