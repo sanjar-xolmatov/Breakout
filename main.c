@@ -52,8 +52,8 @@ int main(void) {
     InitWindow(screenWidth, screenHeight, "Breakout");
     InitAudioDevice();
 
-    Sound paddle_sound = LoadSound("./kenney_impact-sounds/Audio/impactMetal_medium_004.ogg");
-    Sound brick_sound = LoadSound("./kenney_impact-sounds/Audio/impactGeneric_light_003.ogg");
+    Sound paddle_sound = LoadSound("./assets/kenney_impact-sounds/Audio/impactMetal_medium_004.ogg");
+    Sound brick_sound = LoadSound("./assets/kenney_impact-sounds/Audio/impactGeneric_light_003.ogg");
 
     Ball ball = { (Vector2){(screenWidth + 10.0)/2, 400}, 400.0, 300.0, 300.0, 10.0, RAYWHITE };
     Paddle paddle = { { (screenWidth - 80.0f)/2, 950.0f, 80.0f, 15.0f }, 400.0f, 3, 0, BLUE };
@@ -78,8 +78,9 @@ int main(void) {
 
             if (paddle.lives == 0) {
                 game_run = 0;
+                ball.speedX = 0;
+                ball.speedY = 0;
             }
-            // sleep(2);
 
             ball.position = (Vector2){GetRandomValue(10, 795), 400.0};
             ball.speedX = 300.0;
