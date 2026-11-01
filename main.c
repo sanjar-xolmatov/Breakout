@@ -142,6 +142,11 @@ int main(void) {
 
     }
 
+    UnloadSound(brick_sound);
+    UnloadSound(paddle_sound);
+
+    CloseAudioDevice();
+
     CloseWindow();
 
     return 0;
