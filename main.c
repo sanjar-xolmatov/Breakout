@@ -75,16 +75,17 @@ int main(void) {
         if (ball.position.y - ball.radius < 0) ball.speedY *= -1;
         if (ball.position.y + ball.radius > screenHeight) {
             paddle.lives--;
+            ball.position = (Vector2){GetRandomValue(10, 795), 400.0};
+            ball.speedX = 300.0;
+            ball.speedY = 300.0;
 
             if (paddle.lives == 0) {
                 game_run = 0;
                 ball.speedX = 0;
                 ball.speedY = 0;
+                ball.speed = 0;
             }
 
-            ball.position = (Vector2){GetRandomValue(10, 795), 400.0};
-            ball.speedX = 300.0;
-            ball.speedY = 300.0;
         };
         if (CheckCollisionCircleRec(ball.position, ball.radius, paddle.rec) && ball.speedY > 0) {
             float horizontal_difference = ball.position.x - ( paddle.rec.x + paddle.rec.width/2 );
