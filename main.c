@@ -15,6 +15,17 @@ int main(void) {
     const int rows = 8;
     const int columns = 18;
 
+    FILE* fptr;
+
+    fptr = fopen("./data/record.txt", "r");
+
+    if (fptr == NULL) {
+        printf("Error opening file");
+        return 1;
+    }
+
+
+
     GameScreen currentScreen = TITLE;
 
     Brick bricks[rows * columns];
@@ -75,6 +86,18 @@ int main(void) {
                 if (CheckCollisionPointRec(mousePoint, playButton.rec)) {
                     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) currentScreen = GAME;
                 }
+
+                if (CheckCollisionPointRec(mousePoint, playButton.rec)) {
+                    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                        playButton.col = ORANGE;
+                    }
+                    else {
+                        playButton.col = GREEN;
+                    }
+                }
+                else {
+                    playButton.col = BLUE;
+                }
             } break;
             case GAME: {
                 float deltaTime = GetFrameTime();
@@ -130,6 +153,8 @@ int main(void) {
                 if (IsKeyDown(KEY_RIGHT)) paddle.rec.x += paddle.speed * deltaTime;
                 if (IsKeyDown(KEY_LEFT)) paddle.rec.x -= paddle.speed * deltaTime;
 
+                if (IsKeyPressed(KEY_Q)) currentScreen = TITLE;
+
                 paddle.rec.x = Clamp(paddle.rec.x, 0, screenWidth - paddle.rec.width);
 
 
@@ -142,9 +167,10 @@ int main(void) {
         BeginDrawing();
         switch (currentScreen) {
             case TITLE: {
+                ClearBackground(BLACK);
                 DrawText("BREAKOUT", (screenWidth - MeasureText("BREAKOUT", 80))/2, 200, 80, RED);
                 DrawRectangle(playButton.rec.x, playButton.rec.y, playButton.rec.width, playButton.rec.height, playButton.col);
-                DrawText(playButton.text, (screenWidth - MeasureText(playButton.text, 40))/2, playButton.rec.y + 10, 40, BLACK);
+                DrawText(playButton.text, (screenWidth - MeasureText(playButton.text, 40))/2, playButton.rec.y + (playButton.rec.height - 40)/2, 40, BLACK);
             } break;
             case GAME: {
                 ClearBackground(BLACK);
