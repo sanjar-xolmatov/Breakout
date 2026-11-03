@@ -1,8 +1,11 @@
 #include "main.h"
+#include <stdlib.h>
 #include <raylib.h>
 #include <math.h>
 #include <raymath.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 int main(void) {
     const int screenWidth = 805;
@@ -15,15 +18,21 @@ int main(void) {
     const int rows = 8;
     const int columns = 18;
 
-    FILE* fptr;
+    const char *homeDir = getenv("HOME");
+    struct stat sb = {0};
+    char gameDir[100];
+    char gameFile[100];
+    sprintf(gameDir, "%s/.local/share/BreakoutGame", homeDir);
+    sprintf(gameFile, "%s/highscore.txt", gameDir);
 
-    fptr = fopen("./data/record.txt", "r");
-
-    if (fptr == NULL) {
-        printf("Error opening file");
-        return 1;
+    if (stat(gameDir, &sb) == -1) {
+        mkdir (gameDir, 0700);
     }
 
+    char high_score_text[64];
+    int highScore = 0;
+    LoadHighScore(gameFile, &highScore);
+    sprintf(high_score_text, "HIGHEST SCORE: %d", highScore);
 
 
     GameScreen currentScreen = TITLE;
@@ -143,6 +152,11 @@ int main(void) {
                         if (bricks[i].health == 0) {
                             bricks[i].active = 0;
                             paddle.score += bricks[i].points;
+
+                            if (paddle.score > highScore) {
+                                SaveHighScore(gameFile, paddle.score);
+                                highScore = paddle.score;
+                            }
                         }
                         PlaySound(brick_sound);
 
@@ -157,7 +171,6 @@ int main(void) {
 
                 paddle.rec.x = Clamp(paddle.rec.x, 0, screenWidth - paddle.rec.width);
 
-
                 sprintf(text, "LIVES: %d", paddle.lives);
                 sprintf(score_text, "SCORE: %d", paddle.score);
             } break;
@@ -171,6 +184,7 @@ int main(void) {
                 DrawText("BREAKOUT", (screenWidth - MeasureText("BREAKOUT", 80))/2, 200, 80, RED);
                 DrawRectangle(playButton.rec.x, playButton.rec.y, playButton.rec.width, playButton.rec.height, playButton.col);
                 DrawText(playButton.text, (screenWidth - MeasureText(playButton.text, 40))/2, playButton.rec.y + (playButton.rec.height - 40)/2, 40, BLACK);
+                DrawText(high_score_text, (screenWidth - MeasureText(high_score_text, 40))/2, playButton.rec.y + 100, 40, WHITE);
             } break;
             case GAME: {
                 ClearBackground(BLACK);
@@ -204,4 +218,32 @@ int main(void) {
     CloseWindow();
 
     return 0;
+}
+
+void SaveHighScore(const char *filename, int score) {
+    FILE *fptr;
+
+    fptr = fopen(filename, "w");
+
+    if (fptr != NULL) {
+        fprintf(fptr, "%d", score);
+        fclose(fptr);
+        printf("Saved High Score");
+    }
+}
+
+bool LoadHighScore(const char *filename, int *score) {
+    FILE *fptr;
+
+    fptr = fopen(filename, "r");
+
+    if (fptr != NULL) {
+        fscanf(fptr, "%d", score);
+        fclose(fptr);
+        printf("Loaded High Score");
+
+        return true;
+    }
+    fclose(fptr);
+    return false;
 }

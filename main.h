@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include <raylib.h>
+#include <stdbool.h>
 
 typedef struct Ball {
     Vector2 position;
@@ -38,5 +39,9 @@ typedef enum GameScreen {
     TITLE = 0,
     GAME,
 } GameScreen;
+
+void SaveHighScore(const char *filename, int score);
+
+bool LoadHighScore(const char *filename, int *score);
 
 #endif
