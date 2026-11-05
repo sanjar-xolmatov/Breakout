@@ -34,7 +34,6 @@ int main(void) {
     LoadHighScore(gameFile, &highScore);
     sprintf(high_score_text, "HIGHEST SCORE: %d", highScore);
 
-
     GameScreen currentScreen = TITLE;
 
     Brick bricks[rows * columns];
@@ -42,7 +41,7 @@ int main(void) {
     int count = 0;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            float x = 2.5 + j * (40.0 + 5.0);
+            float x = j * (40.0 + 5.0);
             float y = 60 + i * 20.0;
 
             if (i == 0 || i == 1) {
@@ -81,7 +80,7 @@ int main(void) {
 
     SetTargetFPS(60);
 
-    Vector2 previus;
+    Vector2 previous;
     Vector2 mousePoint;
 
     Button playButton = { { (screenWidth - 200.0)/2, 400.0, 200.0, 60.0 }, "PLAY", BLUE };
@@ -111,14 +110,23 @@ int main(void) {
             case GAME: {
                 float deltaTime = GetFrameTime();
 
-                previus = ball.position;
+                previous = ball.position;
 
                 ball.position.x += ball.speedX * deltaTime;
                 ball.position.y += ball.speedY * deltaTime;
 
-                if (ball.position.x + ball.radius > screenWidth) ball.speedX *= -1;
-                if (ball.position.x - ball.radius < 0) ball.speedX *= -1;
-                if (ball.position.y - ball.radius < 0) ball.speedY *= -1;
+                if (ball.position.x + ball.radius > screenWidth) {
+                    ball.position.x = screenWidth - ball.radius;
+                    ball.speedX *= -1;
+                }
+                if (ball.position.x - ball.radius < 0) {
+                    ball.position.x = ball.radius;
+                    ball.speedX *= -1;
+                }
+                if (ball.position.y - ball.radius < 0) {
+                    ball.position.y = ball.radius;
+                    ball.speedY *= -1;
+                }
                 if (ball.position.y + ball.radius > screenHeight) {
                     paddle.lives--;
                     ball.position = (Vector2){GetRandomValue(10, 795), 400.0};
@@ -144,10 +152,6 @@ int main(void) {
 
                 for (int i = 0; i < rows * columns; i++) {
                     if (CheckCollisionCircleRec(ball.position, ball.radius, bricks[i].rec) && bricks[i].active == 1) {
-                        if (previus.y + ball.radius < bricks[i].rec.y && ball.speedY > 0 && previus.y < ball.position.y) ball.speedY *= -1;
-                        if (previus.y - ball.radius > bricks[i].rec.y + bricks[i].rec.height && ball.speedY < 0 && previus.y > ball.position.y) ball.speedY *= -1;
-                        if (previus.x - ball.radius > bricks[i].rec.x + bricks[i].rec.width && ball.speedX < 0 && previus.x > ball.position.x) ball.speedX *= -1;
-                        if (previus.x + ball.radius < bricks[i].rec.x && ball.speedX > 0 && previus.x > ball.position.x) ball.speedX *= -1;
                         bricks[i].health--;
                         if (bricks[i].health == 0) {
                             bricks[i].active = 0;
@@ -156,9 +160,14 @@ int main(void) {
                             if (paddle.score > highScore) {
                                 SaveHighScore(gameFile, paddle.score);
                                 highScore = paddle.score;
+                                sprintf(high_score_text, "HIGHEST SCORE: %d", highScore);
                             }
                         }
                         PlaySound(brick_sound);
+                        if (previous.y + ball.radius <= bricks[i].rec.y && ball.speedY > 0 && previous.y < ball.position.y) ball.speedY *= -1;
+                        else if (previous.y - ball.radius >= bricks[i].rec.y + bricks[i].rec.height && ball.speedY < 0 && previous.y > ball.position.y) ball.speedY *= -1;
+                        else if (previous.x - ball.radius >= bricks[i].rec.x + bricks[i].rec.width && ball.speedX < 0 && previous.x > ball.position.x) ball.speedX *= -1;
+                        else if (previous.x + ball.radius <= bricks[i].rec.x && ball.speedX > 0 && previous.x < ball.position.x) ball.speedX *= -1;
 
                         break;
                     }
@@ -184,13 +193,13 @@ int main(void) {
                 DrawText("BREAKOUT", (screenWidth - MeasureText("BREAKOUT", 80))/2, 200, 80, RED);
                 DrawRectangle(playButton.rec.x, playButton.rec.y, playButton.rec.width, playButton.rec.height, playButton.col);
                 DrawText(playButton.text, (screenWidth - MeasureText(playButton.text, 40))/2, playButton.rec.y + (playButton.rec.height - 40)/2, 40, BLACK);
-                DrawText(high_score_text, (screenWidth - MeasureText(high_score_text, 40))/2, playButton.rec.y + 100, 40, WHITE);
+                DrawText(high_score_text, (screenWidth - MeasureText(high_score_text, 30))/2, playButton.rec.y + 80, 30, WHITE);
             } break;
             case GAME: {
                 ClearBackground(BLACK);
 
                 DrawText(text, 10, 10, 30, BLUE);
-                DrawText(score_text, 650, 10, 30, BLUE);
+                DrawText(score_text, 620, 10, 30, BLUE);
                 if (!game_run) {
                     DrawText("LOST", (screenWidth - MeasureText("LOST", 40))/2, screenHeight/2 - 20, 40, RED);
                 }
@@ -244,6 +253,5 @@ bool LoadHighScore(const char *filename, int *score) {
 
         return true;
     }
-    fclose(fptr);
     return false;
 }
