@@ -72,7 +72,7 @@ int main(void) {
     Sound paddle_sound = LoadSound("./assets/kenney_impact-sounds/Audio/impactMetal_medium_004.ogg");
     Sound brick_sound = LoadSound("./assets/kenney_impact-sounds/Audio/impactGeneric_light_003.ogg");
 
-    Ball ball = { (Vector2){(screenWidth + 10.0)/2, 400}, 400.0, 300.0, 300.0, 10.0, RAYWHITE };
+    Ball ball = { (Vector2){(screenWidth + 10.0)/2, 400}, 400.0, 400.0, 400.0, 10.0, RAYWHITE };
     Paddle paddle = { { (screenWidth - 80.0f)/2, 950.0f, 80.0f, 15.0f }, 400.0f, 3, 0, BLUE };
 
     SetTargetFPS(60);
