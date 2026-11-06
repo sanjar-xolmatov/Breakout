@@ -11,9 +11,6 @@ int main(void) {
     const int screenWidth = 805;
     const int screenHeight = 1000;
 
-    const float brickHeight = 15.0;
-    const float brickWidth = 40.0;
-
     const float angle = 60.0;
     const int rows = 8;
     const int columns = 18;
@@ -21,7 +18,7 @@ int main(void) {
     const char *homeDir = getenv("HOME");
     struct stat sb = {0};
     char gameDir[100];
-    char gameFile[100];
+    char gameFile[300];
     sprintf(gameDir, "%s/.local/share/BreakoutGame", homeDir);
     sprintf(gameFile, "%s/highscore.txt", gameDir);
 
@@ -145,8 +142,8 @@ int main(void) {
                     float horizontal_difference = ball.position.x - ( paddle.rec.x + paddle.rec.width/2 );
                     float n = Clamp(horizontal_difference / (paddle.rec.width/2), -1, 1);
 
-                    ball.speedX = ball.speed * sin(angle * (M_PI /180.0) * n );
-                    ball.speedY = -1 * ball.speed * cos(angle * (M_PI /180.0) * n );
+                    ball.speedX = ball.speed * sin(angle * (PI /180.0) * n );
+                    ball.speedY = -1 * ball.speed * cos(angle * (PI /180.0) * n );
                     PlaySound(paddle_sound);
                 }
 
@@ -229,29 +226,3 @@ int main(void) {
     return 0;
 }
 
-void SaveHighScore(const char *filename, int score) {
-    FILE *fptr;
-
-    fptr = fopen(filename, "w");
-
-    if (fptr != NULL) {
-        fprintf(fptr, "%d", score);
-        fclose(fptr);
-        printf("Saved High Score");
-    }
-}
-
-bool LoadHighScore(const char *filename, int *score) {
-    FILE *fptr;
-
-    fptr = fopen(filename, "r");
-
-    if (fptr != NULL) {
-        fscanf(fptr, "%d", score);
-        fclose(fptr);
-        printf("Loaded High Score");
-
-        return true;
-    }
-    return false;
-}
